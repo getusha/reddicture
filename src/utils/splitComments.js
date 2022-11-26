@@ -16,6 +16,7 @@ const splitComments = (rawComments) => {
     
     result = rawComments.split(/^[0-9]+[)]/gim);
     result.shift()
+    // result = rawComments.split(".")
     // result.unshift();
 
     // let commentStarting = commentRegex.test(rawComments[i-1] + rawComments[i]);

@@ -17,7 +17,7 @@ const Comment = forwardRef((props, ref) => {
                         <span className='date'>{props.date}</span>
                     </Box>
                 }
-                <Box className="comment-content" sx={{ marginRight: props.reply ? "20px" : "320px", paddingBottom: props.reply ? "70px !important" : "" }}>
+                <Box className="comment-content" sx={{ marginRight: props.reply ? "20px" : "320px", paddingBottom: props.reply ? "70px !important" : "40px !important" }}>
                     {props.showComment &&
                         <span className="comment-text">
                             {props.value}
