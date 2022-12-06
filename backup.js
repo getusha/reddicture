@@ -30,7 +30,6 @@ const App = () => {
   const [scrollLocked, setScrollLocked] = useScrollLock(loading);
   const letSayRandomDays = ["· 3 yr. ago", "· 1 yr. ago", "· 2 days ago", "· 1 hr. ago", "· 4 hr. ago", "· 13 days ago", "· 3 yr. ago", "· 1 yr. ago", "· 2 days ago", "· 1 hr. ago", "· 4 hr. ago", "· 13 days ago", "· 3 yr. ago", "· 1 yr. ago", "· 2 days ago", "· 1 hr. ago", "· 2 hr. ago", "· 29 days ago"]
 
-  const [preserved, setPreserved] = useState([]);
 
   const [finalPlease, setPlease] = useState([]);
 
@@ -49,8 +48,6 @@ const App = () => {
 
   const prepareComments = () => {
     setSplittedComment([])
-    setGeneratedImage([])
-    setGeneratedImages([])
     let splittedComments = CommentUtils.splitComments(value);
     // console.log(splittedComments.join(" ").split("."));
     // splittedComments = splittedComments.split(".")
@@ -345,34 +342,22 @@ const App = () => {
     setUNames(uNames)
   }, [])
 
-  useEffect(()=>{
-    console.log(`${preserved}`, "color: orangered")
-  }, [preserved])
+
 
   const generateIMG = () => {
-    // setLoading(true)
-
-    const commentGroups = document.getElementsByClassName("group");
-
-    for(let i = 0; i < commentGroups.length; i++){
-      
-    }
-
-    console.log(document.getElementsByClassName("group"))
+    setLoading(true)
     const theNodes = Array.from(document.getElementsByClassName("node"));
     const preparedElements = theNodes.length;
 
-
     const genratableImageElements = [];
 
-    for (let i = 0; i < preparedElements; i++) {
-      const theElement = document.getElementsByClassName(`node${i}`);
-      console.log(`%c ${theElement[0]}`, "color: green")
-  
+    for(let i =0; i < preparedElements; i++){
+      const theElement = document.getElementsByClassName(`comment${i}`)[0];
       genratableImageElements.push(theElement)
     }
+    console.log(genratableImageElements)
 
-    theNodes.forEach((myNode, index) => {
+    genratableImageElements.forEach((myNode, index) => {
       htmlToImage.toPng(myNode, { canvasHeight: 1080, canvasWidth: 1920 })
         .then(function (dataUrl) {
           var img = new Image();
@@ -466,12 +451,12 @@ const App = () => {
             //   profilePic={sampleProfile} >
             // </Comment>
             // </Comments>
-            <Carousel className={`group group${i}`}>
+            <Carousel className={`group${i}`}>
               {howmany.map((hh, index) => {
                 return (
                   <>
                     <Carousel.Slide>
-                      <Comments id={`${index}`}>
+                      <Comments id={`comment${index}`}>
                         <Comment
                           username={UNames[0]}
                           date={letSayRandomDays[0]}
@@ -516,13 +501,13 @@ const App = () => {
             <SimpleGrid cols={1} ml={"auto"} mr={"auto"}>
               <ScrollArea sx={{ height: "70vh" }}>
                 <Carousel>
-                  {generatedImages.map((gImg) => {
-                    return (
+                {generatedImages.map((gImg) => {
+                  return (
                       <Carousel.Slide>
                         <img src={gImg} alt="" className="generated-image" />
                       </Carousel.Slide>
-                    )
-                  })}
+                  )
+                })}
                 </Carousel>
               </ScrollArea>
             </SimpleGrid>

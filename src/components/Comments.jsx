@@ -5,7 +5,7 @@ import background from "../source/background.jpg";
 const Comments = forwardRef((props, ref) => {
     return (
         <>
-            <Box ref={ref} sx={{ background: `url(${background})` }} className="node">
+            <Box id={props.id} ref={ref} sx={{ background: `url(${background})` }} className={`node node${props.id}`}>
                 {props.children}
             </Box>
         </>
