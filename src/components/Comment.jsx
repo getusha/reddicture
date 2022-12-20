@@ -24,7 +24,7 @@ const Comment = forwardRef((props, ref) => {
             <span className="date">{props.date}</span>
           </Box>
         )}
-        {props.showComment && (
+        {(props.value.length > 0 || !props.reply && props.replyValue.length > 0) && (
           <Box
             className="comment-content"
             sx={{
@@ -37,14 +37,34 @@ const Comment = forwardRef((props, ref) => {
             }}
           >
             <span>{props.length}</span>
-            <span className="comment-text">
-              {props.value.map((theSentence, sentenceIndex) => {
+            {!props.reply && props.showComment && typeof props.showUpper === "undefined"  ? (
+              <span className="comment-text">
+                {props.value.map((theSentence, sentenceIndex) => {
+                  return (
+                    <>
+                      <span
+                        contentEditable
+                        style={
+                          sentenceIndex <= props.sentenceIndex
+                            ? {}
+                            : { opacity: 0 }
+                        }
+                      >
+                        {theSentence}
+                      </span>
+                    </>
+                  );
+                })}
+              </span>
+            ) : (
+              <span className="comment-text">
+              {typeof props.value != "string" && props.value.map((theSentence, sentenceIndex) => {
                 return (
                   <>
                     <span
-                    contentEditable
+                      contentEditable
                       style={
-                        sentenceIndex <= props.sentenceIndex
+                        sentenceIndex <= 1 && props.mainCommentIndex <= props.sentenceIndex
                           ? {}
                           : { opacity: 0 }
                       }
@@ -54,7 +74,8 @@ const Comment = forwardRef((props, ref) => {
                   </>
                 );
               })}
-            </span>
+              </span>
+            )}
 
             {props.showControls && (
               <Controls>

@@ -95,6 +95,7 @@ const allProfilePics = [
   profile29,
   profile30,
 ];
+let finalResult = [];
 
 const App = () => {
   const [count, setCount] = useState(0);
@@ -161,7 +162,7 @@ const App = () => {
       // const base64 = dataUrl.replace(/^data:image\/(png|jpg);base64,/, '');
       zip.current.file(
         `image${i}.png`,
-        generatedImages[i].replace(/^data:image\/(png|jpg);base64,/, ""),
+        generatedImages[i].imgUri.replace(/^data:image\/(png|jpg);base64,/, ""),
         { base64: true }
       );
     }
@@ -397,7 +398,7 @@ const App = () => {
           // console.warn(commentinside)
           if (
             commentinside.comment.join("").length +
-              commentinside.replys.join("").length >
+            commentinside.replys.join("").length >
             350
           ) {
             console.log("%c one to the next page", "color: green;");
@@ -407,7 +408,7 @@ const App = () => {
                 console.log({ reply, index });
                 if (
                   commentinside.comment.join("").length +
-                    commentinside.replys.join("").length >
+                  commentinside.replys.join("").length >
                   350
                 ) {
                   newStruct.replys.unshift(reply);
@@ -427,7 +428,7 @@ const App = () => {
                 console.log({ comment, index });
                 if (
                   commentinside.comment.join("").length +
-                    commentinside.replys.join("").length >
+                  commentinside.replys.join("").length >
                   350
                 ) {
                   newStruct.comment.unshift(comment);
@@ -514,9 +515,9 @@ const App = () => {
     for (let usernames = 0; usernames < 30; usernames++) {
       uNames.push(Username.random());
       voteCounts.push(makeItVoteCount(Math.floor(Math.random() * 5000)));
-      setRandomProfPic((prev)=>{
-        return [...prev, randomProfilePic()]
-      })
+      setRandomProfPic((prev) => {
+        return [...prev, randomProfilePic()];
+      });
     }
     letSayRandomDays = shuffle(letSayRandomDays);
     setVoteCount(voteCounts);
@@ -527,27 +528,93 @@ const App = () => {
     console.log(`${preserved}`, "color: orangered");
   }, [preserved]);
 
-  const generateIMG = () => {
+  const generateIMG = async () => {
     // setLoading(true)
 
     const commentGroups = Array.from(document.getElementsByClassName("group"));
 
-    for (let i = 0; i < commentGroups.length; i++) {}
+
+
+    // for (let i = 0; i < commentGroups.length; i++) {
+    //   console.log(document.getElementById(i))
+    // }
 
     console.log(document.getElementsByClassName("group"));
-    const theNodes = Array.from(document.getElementsByClassName("node"));
+    let theNodes = Array.from(document.getElementsByClassName("node"));
     const preparedElements = theNodes.length;
 
-    const genratableImageElements = [];
+    let correctlySortedNode = [];
 
-    for (let i = 0; i < preparedElements; i++) {
-      const theElement = document.getElementsByClassName(`node${i}`);
-      console.log(`%c ${theElement[0]}`, "color: green");
+    for (let i = 0; i < theNodes.length; i++) {
+      let foundNode = document.getElementById(`node${i}`);
+      console.log(foundNode)
+      if (foundNode != null) {
+        let dataUrl = await htmlToImage
+          .toPng(foundNode, { canvasHeight: 1080, canvasWidth: 1920 });
+        correctlySortedNode.push({ idx: foundNode.id, imgUri: dataUrl })
+      }
 
-      genratableImageElements.push(theElement);
+      if (theNodes.length - 1 == i) {
+        setGeneratedImages(current => [...correctlySortedNode])
+      }
     }
 
-    let allCommentGroups = [];
+    // correctlySortedNode.forEach((node, index)=>{
+    //   console.log(node.id)
+    // })
+
+    // theNodes = theNodes.sort(function(a, b) {
+    //   var idA = a.getAttribute("id");
+    //   var idB = b.getAttribute("id");
+    //   if (idA < idB) {
+    //     return -1;
+    //   }
+    //   if (idA > idB) {
+    //     return 1;
+    //   }
+    //   return 0;
+    // });
+
+    // console.log(
+    //   theNodes.sort(function(a, b) {
+    //     var idA = a.getAttribute("id");
+    //     var idB = b.getAttribute("id");
+    //     if (idA < idB) {
+    //       return -1;
+    //     }
+    //     if (idA > idB) {
+    //       return 1;
+    //     }
+    //     return 0;
+    //   })
+    // )
+    // correctlySortedNode.forEach(async (myNode, index) => {
+    //    let dataUrl = await htmlToImage
+    //       .toPng(myNode, { canvasHeight: 1080, canvasWidth: 1920 });
+    //       finalResult.push({idx: myNode.id});
+    //       // setGeneratedImages((prev) => {
+    //       //   return [...prev, {imgUri: dataUrl, idx: myNode.id}];
+    //       // });
+    //       if(index === correctlySortedNode.length - 1){
+    //         setGeneratedImages(finalResult);
+    //       }
+    // });
+    // finalResult.forEach((res)=>{
+    //   console.log("Yes")
+    //   console.log(res.idx)
+    // })
+
+
+    // const genratableImageElements = [];
+
+    // for (let i = 0; i < preparedElements; i++) {
+    //   const theElement = document.getElementsByClassName(`node${i}`);
+    //   console.log(`%c ${theElement[0]}`, "color: green");
+
+    //   genratableImageElements.push(theElement);
+    // }
+
+    // let allCommentGroups = [];
 
     // Each comment group is mapped
     // for(let i = 0; i < commentGroups.length - 1; i++){
@@ -582,28 +649,28 @@ const App = () => {
     //     theComments.unshift(comment)
     //   })
     // })
-    console.log(commentGroups);
-    commentGroups.forEach((myNode, index) => {
-      Array.from(myNode.children).forEach((node) => {
-        console.log(node);
-        htmlToImage
-          .toPng(node, { canvasHeight: 1080, canvasWidth: 1920 })
-          .then(function (dataUrl) {
-            var img = new Image();
-            img.src = dataUrl;
-            setGeneratedImages((prev) => {
-              return [...prev, dataUrl];
-            });
-            img.src = "";
-            if (theNodes.length - 1 === index) {
-              // setLoading(false);
-            }
-          })
-          .catch(function (error) {
-            console.error("oops, something went wrong!", error);
-          });
-      });
-    });
+    // console.log(commentGroups);
+    // commentGroups.forEach((myNode, index) => {
+    //   Array.from(myNode.children).forEach((node) => {
+    //     console.log(node);
+    //     htmlToImage
+    //       .toPng(node, { canvasHeight: 1080, canvasWidth: 1920 })
+    //       .then(function (dataUrl) {
+    //         var img = new Image();
+    //         img.src = dataUrl;
+    //         setGeneratedImages((prev) => {
+    //           return [...prev, index];
+    //         });
+    //         img.src = "";
+    //         if (theNodes.length - 1 === index) {
+    //           // setLoading(false);
+    //         }
+    //       })
+    //       .catch(function (error) {
+    //         console.error("oops, something went wrong!", error);
+    //       });
+    //   });
+    // });
   };
 
   const customLoader = (
@@ -731,58 +798,170 @@ const App = () => {
                 return (
                   <>
                     {/* <p style={{ color: "yellow", fontSize: 50 }}>Group {i}</p> */}
-                    {hh.comment.map((withSentenceComment, sentenceIndex) => {
-                      return (
-                        <Comments id={`${index}${sentenceIndex}`}>
-                          <Comment
-                            username={UNames[index]}
-                            date={letSayRandomDays[index]}
-                            showProfile={index == 0}
-                            sentenceIndex={sentenceIndex}
-                            // index={index}
-                            showComment={true}
-                            // length={`${index} : ${howmany.length}`}
-                            showControls={
-                              index == howmany.length - 1 &&
-                              hh.replys.length === 0
-                            }
-                            votes={voteCount[index]}
-                            value={hh.comment}
-                            reply={false}
-                            ref={node}
-                            mLeft="300px"
-                            mTop="70px"
-                            profilePic={randomProfPic[0]}
-                          >
-                            {/* {hh.replys.map((reply) => {
-                              return ( */}
-                            {hh.replys.map(
-                              (sentenceWithReplys, sentenceWithReplysIndex) => {
+                    {hh.comment.length > 0 &&
+                      hh.comment.map((withSentenceComment, sentenceIndex) => {
+                        return (
+                          //<Comments id={`${index}${sentenceIndex}`}>
+                          <Comments id={`node${sentenceIndex + (index * 11)}`}>
+                            <Comment
+                              username={UNames[index]}
+                              date={letSayRandomDays[index]}
+                              showProfile={index == 0}
+                              sentenceIndex={sentenceIndex}
+                              // index={index}
+                              showComment={true}
+                              // length={`${index} : ${howmany.length}`}
+                              showControls={index == howmany.length - 1 || index == 0 && howmany.length === 1}
+                              votes={voteCount[index]}
+                              value={hh.comment}
+                              reply={false}
+                              replyValue={hh.replys}
+                              ref={node}
+                              mLeft="300px"
+                              mTop="70px"
+                              profilePic={randomProfPic[0]}
+                            >
+                              {/* {hh.replys.map((reply) => { */}
+                              {/* return ( */}
+                              <>
                                 <Comment
                                   username={
-                                    UNames.length > 0
-                                      ? UNames[index - 1]
-                                      : UNames[index + 1]
+                                    index < UNames.length
+                                      ? UNames[index + 1]
+                                      : UNames[10]
                                   }
-                                  sentenceIndex={sentenceWithReplys}
+                                  sentenceIndex={1}
                                   date={letSayRandomDays[index]}
                                   showProfile={hh.replys.length != 0}
                                   showComment={hh.replys.length != 0}
-                                  showControls={hh.replys.length != 0}
+                                  showControls={
+                                    howmany.length == 1 && hh.replys.length != 0
+                                  }
                                   value={hh.replys}
                                   reply={true}
+                                  votes={voteCount[index + 1]}
+                                  replyValue={hh.replys}
                                   mLeft="30px"
                                   mTop="70px"
                                   profilePic={randomProfPic[1]}
-                                ></Comment>;
-                              }
-                            )}
-                            {/* )
-                            })} */}
-                          </Comment>
-                        </Comments>
-                      );
-                    })}
+                                ></Comment>
+                              </>
+                              {/* ); */}
+                              {/* })} */}
+                            </Comment>
+                          </Comments>
+                        );
+                      })}
+
+                    {hh.comment.length > 0 &&
+                      hh.replys.map((withSentenceComment, sentenceIndex) => {
+                        return (
+                          <Comments id={`${index}${sentenceIndex}`}>
+                            <Comment
+                              username={UNames[index]}
+                              date={letSayRandomDays[index]}
+                              showProfile={index == 0}
+                              sentenceIndex={sentenceIndex}
+                              // index={index}
+                              showComment={true}
+                              // length={`${index} : ${howmany.length}`}
+                              showControls={index == howmany.length - 1}
+                              votes={voteCount[index]}
+                              value={hh.comment}
+                              reply={false}
+                              replyValue={hh.replys}
+                              ref={node}
+                              mLeft="300px"
+                              mTop="70px"
+                              showUpper
+                              profilePic={randomProfPic[0]}
+                            >
+                              {/* {hh.replys.map((reply) => { */}
+                              {/* return ( */}
+                              <>
+                                <Comment
+                                  username={
+                                    index < UNames.length
+                                      ? UNames[index + 1]
+                                      : UNames[10]
+                                  }
+                                  sentenceIndex={1}
+                                  date={letSayRandomDays[index]}
+                                  showProfile={hh.replys.length != 0}
+                                  showComment={hh.replys.length != 0}
+                                  showControls={
+                                    howmany.length == 1 && hh.replys.length != 0
+                                  }
+                                  votes={voteCount[index + 1]}
+                                  value={hh.replys}
+                                  reply={true}
+                                  replyValue={hh.replys}
+                                  mLeft="30px"
+                                  mTop="70px"
+                                  profilePic={randomProfPic[1]}
+                                ></Comment>
+                              </>
+                              {/* ); */}
+                              {/* })} */}
+                            </Comment>
+                          </Comments>
+                        );
+                      })}
+
+                    {hh.comment.length < 1 &&
+                      hh.replys.map((reply, i) => {
+                        return (
+                          <>
+                            <Comments id={`${index}${i}`}>
+                              <Comment
+                                username={UNames[index]}
+                                date={letSayRandomDays[index]}
+                                showProfile={false}
+                                sentenceIndex={0}
+                                // index={index}
+                                showComment={false}
+                                // length={`${index} : ${howmany.length}`}
+                                showControls={false}
+                                votes={0}
+                                value={""}
+                                replyValue={hh.replys}
+                                reply={false}
+                                ref={node}
+                                mLeft="300px"
+                                mTop="70px"
+                                profilePic={""}
+                              >
+                                {/* {hh.replys.map((reply) => { */}
+                                {/* return ( */}
+                                <>
+                                  <Comment
+                                    username={
+                                      UNames.length > 0
+                                        ? UNames[index - 1]
+                                        : UNames[index + 1]
+                                    }
+                                    sentenceIndex={0}
+                                    date={letSayRandomDays[index]}
+                                    showProfile={false}
+                                    showComment={hh.replys.length != 0}
+                                    showControls={
+                                      hh.replys.length - 1 === index
+                                    }
+                                    value={hh.replys}
+                                    reply={true}
+                                    replyValue={hh.replys}
+                                    mLeft="30px"
+                                    mTop="70px"
+                                    profilePic={randomProfPic[1]}
+                                  ></Comment>
+                                </>
+                                {/* ); */}
+                                {/* })} */}
+                              </Comment>
+                            </Comments>
+                          </>
+                        );
+                      })}
                   </>
                 );
               })}
@@ -793,15 +972,15 @@ const App = () => {
         <Grid.Col span={6}>
           <Center>
             <SimpleGrid cols={1} ml={"auto"} mr={"auto"}>
+              <Button onClick={downloadImages}>Download Images</Button>
               <ScrollArea sx={{ height: "70vh" }}>
                 {/* <Carousel> */}
-                <button onClick={downloadImages}>Download Images</button>
                 {generatedImages.map((gImg, imgIndx) => {
                   return (
                     // <Carousel.Slide>
                     <>
-                      <p>{imgIndx}</p>
-                      <img src={gImg} alt="" className="generated-image" />
+                      {/* <p>{gImg.idx}</p> */}
+                      <img src={gImg.imgUri} alt="" className="generated-image" />
                     </>
                     // </Carousel.Slide>
                   );
