@@ -62,6 +62,7 @@ import profile27 from "./source/icons/profile27.png";
 import profile28 from "./source/icons/profile28.png";
 import profile29 from "./source/icons/profile29.png";
 import profile30 from "./source/icons/profile30.png";
+import { generateUsername } from "friendly-username-generator";
 
 const allProfilePics = [
   profile1,
@@ -153,15 +154,26 @@ const App = () => {
 
   const [finalPlease, setPlease] = useState([]);
 
+  function generateFileName(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
   const zip = useRef(new JSZip());
 
   const downloadImages = () => {
     const imageElements = document.getElementsByClassName("generated-image");
+    let fileName = generateFileName(5);
     for (let i = 0; i < generatedImages.length; i++) {
       // const dataUrl = imageElements[i].toDataURL();
       // const base64 = dataUrl.replace(/^data:image\/(png|jpg);base64,/, '');
       zip.current.file(
-        `image${i}.png`,
+        `${fileName}__${i}.png`,
         generatedImages[i].imgUri.replace(/^data:image\/(png|jpg);base64,/, ""),
         { base64: true }
       );
@@ -251,13 +263,13 @@ const App = () => {
           console.error(trimmed);
 
           trimmed.forEach((trim) => {
-            if (trim.length > 105) {
+            if (trim.length > 115) {
               let sentenceHolder = "";
               // newStruct.comment.push(trim.match(/[^,]+[,]?|,/g))
 
               trim.split(" ").forEach((ts, i) => {
                 // console.table([[i], [trim.split(" ").length - 1]])
-                if (sentenceHolder.length < 105) {
+                if (sentenceHolder.length < 115) {
                   sentenceHolder += ` ${ts}`;
                 } else {
                   newStruct.comment.push(sentenceHolder);
@@ -266,7 +278,7 @@ const App = () => {
                 }
                 if (
                   i === trim.split(" ").length - 1 &&
-                  sentenceHolder.length < 105
+                  sentenceHolder.length < 115
                 ) {
                   newStruct.comment.push(sentenceHolder);
                 }
@@ -280,13 +292,13 @@ const App = () => {
           // newStruct.comment.push(wc.match(/[^.,]+[.,]?|.,/g))
         } else {
           trimmed.forEach((trim) => {
-            if (trim.length > 105) {
+            if (trim.length > 115) {
               let sentenceHolder = "";
               // newStruct.comment.push(trim.match(/[^,]+[,]?|,/g))
 
               trim.split(" ").forEach((ts, i) => {
                 // console.table([[i], [trim.split(" ").length-1]])
-                if (sentenceHolder.length < 105) {
+                if (sentenceHolder.length < 115) {
                   sentenceHolder += ` ${ts}`;
                 } else {
                   newStruct.replys.push(sentenceHolder);
@@ -295,7 +307,7 @@ const App = () => {
                 }
                 if (
                   i === trim.split(" ").length - 1 &&
-                  sentenceHolder.length < 105
+                  sentenceHolder.length < 115
                 ) {
                   newStruct.replys.push(sentenceHolder);
                 }
@@ -544,11 +556,21 @@ const App = () => {
     const preparedElements = theNodes.length;
 
     let correctlySortedNode = [];
-
-    for (let i = 0; i < theNodes.length; i++) {
+    console.warn(theNodes.length)
+    let findMuch = theNodes.length;
+    let holder = 0;
+    for (let i = 0; i < findMuch; i++) {
       let foundNode = document.getElementById(`node${i}`);
       console.log(foundNode)
+      if(foundNode === null){
+        findMuch = theNodes.length + 2;
+        // findMuch += 1;
+        // findMuch = theNodes.length + 1;
+        console.log("found null")
+      }
       if (foundNode != null) {
+        findMuch += holder;
+        holder = 0;
         let dataUrl = await htmlToImage
           .toPng(foundNode, { canvasHeight: 1080, canvasWidth: 1920 });
         correctlySortedNode.push({ idx: foundNode.id, imgUri: dataUrl })

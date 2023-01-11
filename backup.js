@@ -35,14 +35,9 @@ const App = () => {
 
   useEffect(() => {
     console.log(splittedComment)
-
     let newStruct = {
-      comment: [
-
-      ],
-      replys: [
-
-      ]
+      comment: [],
+      replys: []
     }
   }, [splittedComment])
 
@@ -60,12 +55,8 @@ const App = () => {
 
     let withReplyComments = [];
     let newStruct = {
-      comment: [
-
-      ],
-      replys: [
-
-      ]
+      comment: [],
+      replys: []
     }
     let please = [];
 
@@ -172,12 +163,8 @@ const App = () => {
       please.push([newStruct])
       console.warn("%", please, "color: orangered")
       newStruct = {
-        comment: [
-
-        ],
-        replys: [
-
-        ]
+        comment: [],
+        replys: []
       }
 
     })
